@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3.1.4
+      with:
+        python-version: 3.1.7
+    - name: Docker Login
+      uses: docker/login-action@v2.1.0
+      with:
+        username: ${{ secrets.dockerUserName }}
+        password: ${{ secrets.dockerUserPass }}
+        
+    - name: Get Time
+      id: time
+      uses: nanzm/get-time-action@v1.1
+      with:
+        timeZone: 8
+        format: 'YYYYMMDDHHmm'
+        
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: dzplus/objects
+        
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v4.0.0
+      with:
+        context: .
+        tags: ${{ steps.meta.outputs.tags }}-${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title'] }}-${{ steps.time.outputs.time }}
+        labels: ${{ steps.meta.outputs.labels }}
+        push: true
