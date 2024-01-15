@@ -8,6 +8,7 @@ import sys
 import json
 import yaml
 import time
+import schedule
 
 from apiproxy.douyin.douyin import Douyin
 from apiproxy.douyin.download import Download
@@ -101,7 +102,7 @@ def argument():
 
 def yamlConfig():
     curPath = os.path.dirname(os.path.realpath(sys.argv[0]))
-    yamlPath = os.path.join(curPath, "config.yml")
+    yamlPath = os.path.join(curPath, "config/config.yml")
     f = open(yamlPath, 'r', encoding='utf-8')
     cfg = f.read()
     configDict = yaml.load(stream=cfg, Loader=yaml.FullLoader)
@@ -222,11 +223,10 @@ def yamlConfig():
         pass
 
 
-def main():
+def job():
+    print("执行")
     start = time.time()  # 开始时间
-
     args = argument()
-
     if args.cmd:
         configModel["link"] = args.link
         configModel["path"] = args.path
@@ -356,6 +356,17 @@ def main():
     end = time.time()  # 结束时间
     print('\n' + '[下载完成]:总耗时: %d分钟%d秒\n' % (int((end - start) / 60), ((end - start) % 60)))  # 输出下载用时时间
 
+
+def main():
+    # 每隔5分钟执行一次job函数
+    schedule.every(20).minutes.do(job)
+
+    while True:
+        # 运行所有已经设置好的定时任务
+        schedule.run_pending()
+
+        # 程序休息1秒钟
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
