@@ -77,7 +77,7 @@ python -m pip install -r requirements.txt
 
 直接运行DouYinCommand.py或者DouYinCommand.exe, 无需在命令中加入任何参数, 所有参数都从配置文件中读取
 
-基本配置示例[config.yml](./config.yml), 请自己登录网页版抖音后F12获取cookie
+基本配置示例[config.yml](config/config.yml), 请自己登录网页版抖音后F12获取cookie
 
 
 ### 命令行方式
